@@ -1,104 +1,79 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"os/exec"
-	"regexp"
 	"strings"
+
+	"github.com/dropseed/deps/pkg/schema"
 )
 
-func collect(inputPath, outputPath string) map[string]interface{} {
-	currentDependencies := map[string]interface{}{}
-	updatedDependencies := map[string]interface{}{}
+func collect(inputPath, outputPath string) *schema.Dependencies {
 
-	if remotesStr := os.Getenv("DEPS_SETTING_REMOTES"); remotesStr != "" {
-		var remotes []remote
-		if err := json.Unmarshal([]byte(remotesStr), &remotes); err != nil {
-			println("Invalid remotes")
-			os.Exit(1)
-		}
+	// TODO should use inputPath to join with filename?
 
-		for _, remote := range remotes {
-			// println(remote)
-			println(remote.Url)
+	currentDependencies := map[string]*schema.ManifestDependency{}
+	updatedDependencies := map[string]*schema.ManifestDependency{}
 
-			// tag_prefix
-			for _, rif := range remote.ReplaceInFiles {
-				regex := regexp.MustCompile(rif.Pattern)
+	for remoteURL, remote := range loadRemotesFromEnv() {
+		fmt.Printf("Collecting remote %s\n", remoteURL)
 
-				// TODO use inputPath as base?
-				fileBytes, err := ioutil.ReadFile(rif.Filename)
-				if err != nil {
-					panic(err)
+		for _, rif := range remote.ReplaceInFiles {
+			regex := rif.regex()
+
+			fileStr := rif.readFile()
+			submatches := regex.FindStringSubmatch(fileStr)
+
+			currentVersion := submatches[1]
+
+			if currentVersion == "" {
+				panic(errors.New("Unable to find current version in pattern"))
+			}
+
+			fmt.Printf("Current version: %s", currentVersion)
+			tags := gitRemoteTags(remoteURL)
+
+			if rif.TagPrefix != "" {
+				fmt.Printf("Filtering to tags with prefix %s and removing it", rif.TagPrefix)
+				tags = filterAndRemovePrefixes(tags, rif.TagPrefix)
+				fmt.Printf("Remaining tags: %v\n", tags)
+			}
+
+			// TODO assume semver, option to not
+			// if semver then sort first
+			// (if not semver then will just get the last tag)
+			latestVersion := tags[len(tags)-1]
+			fmt.Printf("Latest version: %s", latestVersion)
+
+			currentDependencies[remoteURL] = &schema.ManifestDependency{
+				Constraint: currentVersion,
+				Dependency: &schema.Dependency{
+					Source: "git",
+					Repo:   remoteURL,
+				},
+			}
+
+			if latestVersion != currentVersion {
+				updatedDependencies[remoteURL] = &schema.ManifestDependency{
+					Constraint: latestVersion,
+					Dependency: &schema.Dependency{
+						Source: "git",
+						Repo:   remoteURL,
+					},
 				}
-				fileStr := string(fileBytes)
-				submatches := regex.FindAllStringSubmatch(fileStr, -1)
-
-				// currentStr := submatches[0][0]
-				currentVersion := submatches[0][1]
-
-				if currentVersion == "" {
-					panic(errors.New("Unable to find current version in pattern"))
-				}
-
-				fmt.Printf("Current version: %s", currentVersion)
-
-				// replacement := currentStr
-				// println(replacement)
-
-				// get available version
-				tags := gitRemoteTags(remote.Url)
-				fmt.Printf("%+v", tags)
-
-				if rif.TagPrefix != "" {
-					tags = filterAndRemovePrefixes(tags, rif.TagPrefix)
-				}
-
-				fmt.Printf("Without prefix\n%+v", tags)
-
-				// if semver then sort first
-				// (if not semver then will just get the last tag)
-				latestVersion := tags[len(tags)-1]
-
-				currentDependencies[remote.Url] = map[string]string{
-					"constraint": currentVersion,
-					"source":     "git",
-					"repo":       remote.Url,
-				}
-
-				if latestVersion != currentVersion {
-					updatedDependencies[remote.Url] = map[string]string{
-						"constraint": latestVersion,
-						"source":     "git",
-						"repo":       remote.Url,
-					}
-				}
-
-				// replace replacement
-				// use replacement in
-				// result := regex.ReplaceAllString(fileStr, rif.Pattern)
-				// println(result)
 			}
 		}
 	}
 
-	// how do I want it to end up? has to be manifest to treat each individually by default
-	// what if manifest name is ""? test it and see what happens
-	// Update sentry in docs.md from / to /
-	// Update sentry from / to /
-
-	output := map[string]interface{}{
-		"manifests": map[string]interface{}{
-			"": map[string]interface{}{
-				"current": map[string]interface{}{
-					"dependencies": currentDependencies,
+	output := &schema.Dependencies{
+		Manifests: map[string]*schema.Manifest{
+			"": &schema.Manifest{
+				Current: &schema.ManifestVersion{
+					Dependencies: currentDependencies,
 				},
-				"updated": map[string]interface{}{
-					"dependencies": updatedDependencies,
+				Updated: &schema.ManifestVersion{
+					Dependencies: updatedDependencies,
 				},
 			},
 		},
@@ -114,7 +89,7 @@ func gitRemoteTags(url string) []string {
 		panic(err)
 	}
 
-	// Preserve the order, but keep remove duplicates as we go
+	// Preserve the order, but remove duplicates as we go
 	tags := []string{}
 	tagsSeen := map[string]bool{}
 
