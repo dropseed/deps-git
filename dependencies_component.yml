@@ -1,3 +1,0 @@
-# install: use godownloader script? what about dev testing - try go build first? or see if in path first?
-collect: go run $DEPS_COMPONENT_PATH --collect
-act: go run $DEPS_COMPONENT_PATH --act
