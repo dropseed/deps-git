@@ -1,24 +1,24 @@
 {
-    "manifests": {
-        "": {
-            "current": {
-                "dependencies": {
-                    "https://github.com/getsentry/sentry-javascript.git": {
-                        "constraint": "3.24.0",
-                        "source": "git",
-                        "repo": "https://github.com/getsentry/sentry-javascript.git"
-                    }
-                }
-            },
-            "updated": {
-                "dependencies": {
-                    "https://github.com/getsentry/sentry-javascript.git": {
-                        "constraint": "3.27.0",
-                        "source": "git",
-                        "repo": "https://github.com/getsentry/sentry-javascript.git"
-                    }
-                }
-            }
+  "manifests": {
+    "": {
+      "current": {
+        "dependencies": {
+          "https://github.com/getsentry/sentry-javascript.git": {
+            "constraint": "3.24.0",
+            "source": "git",
+            "repo": "https://github.com/getsentry/sentry-javascript.git"
+          }
         }
+      },
+      "updated": {
+        "dependencies": {
+          "https://github.com/getsentry/sentry-javascript.git": {
+            "constraint": "3.27.0",
+            "source": "git",
+            "repo": "https://github.com/getsentry/sentry-javascript.git"
+          }
+        }
+      }
     }
+  }
 }
