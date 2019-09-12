@@ -1,0 +1,27 @@
+tests:
+- name: manually remove v
+  repo: repo_current
+  diff: repo_updated
+  data: dependencies.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/kubernetes/minikube.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: minikube version (\S+)
+            tag_prefix: v
+
+- name: auto remove v
+  repo: repo_current
+  diff: repo_updated
+  data: dependencies.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/kubernetes/minikube.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: minikube version (\S+)

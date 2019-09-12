@@ -31,20 +31,11 @@ func collect(inputPath, outputPath string) *schema.Dependencies {
 				panic(errors.New("Unable to find current version in pattern"))
 			}
 
-			fmt.Printf("Current version: %s", currentVersion)
+			fmt.Printf("Current version: %s\n", currentVersion)
 			tags := gitRemoteTags(remoteURL)
 
-			if rif.TagPrefix != "" {
-				fmt.Printf("Filtering to tags with prefix %s and removing it", rif.TagPrefix)
-				tags = filterAndRemovePrefixes(tags, rif.TagPrefix)
-				fmt.Printf("Remaining tags: %v\n", tags)
-			}
-
-			// TODO assume semver, option to not
-			// if semver then sort first
-			// (if not semver then will just get the last tag)
-			latestVersion := tags[len(tags)-1]
-			fmt.Printf("Latest version: %s", latestVersion)
+			latestVersion := rif.getLatestTag(tags)
+			fmt.Printf("Latest version: %s\n", latestVersion)
 
 			currentDependencies[remoteURL] = &schema.ManifestDependency{
 				Constraint: currentVersion,
@@ -54,7 +45,7 @@ func collect(inputPath, outputPath string) *schema.Dependencies {
 				},
 			}
 
-			if latestVersion != currentVersion {
+			if latestVersion != "" && latestVersion != currentVersion {
 				updatedDependencies[remoteURL] = &schema.ManifestDependency{
 					Constraint: latestVersion,
 					Dependency: &schema.Dependency{
@@ -113,14 +104,4 @@ func gitRemoteTags(url string) []string {
 	}
 
 	return tags
-}
-
-func filterAndRemovePrefixes(tags []string, prefix string) []string {
-	filtered := []string{}
-	for _, s := range tags {
-		if strings.HasPrefix(s, prefix) {
-			filtered = append(filtered, s[len(prefix):])
-		}
-	}
-	return filtered
 }
