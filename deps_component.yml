@@ -1,8 +1,8 @@
 install: |
-  if hash dep 2>/dev/null; then
-      dep ensure && go build -o bin/deps-git
+  if [ -z "$DEPS_TEST" ]; then
+      curl https://raw.githubusercontent.com/dropseed/deps-git/master/install.sh | sh -s -- 0.1.1
   else
-      curl https://raw.githubusercontent.com/dropseed/deps-git/master/install.sh | sh 0.1.0
+      dep ensure && go build -o bin/deps-git
   fi
 collect: $DEPS_COMPONENT_PATH/bin/deps-git --collect
 act: $DEPS_COMPONENT_PATH/bin/deps-git --act

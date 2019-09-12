@@ -5,6 +5,6 @@ install:
 script:
   - echo "skipping..."
   - curl https://deps.app/install.sh | bash
-  - ./bin/deps dev test -l
+  - DEPS_TEST=true ./bin/deps dev test -l
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
