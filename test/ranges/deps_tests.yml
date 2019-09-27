@@ -1,0 +1,14 @@
+tests:
+- name: range
+  repo: repo_current
+  diff: repo_updated
+  data: dependencies.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/kubernetes/minikube.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: minikube version (\S+)
+            range: "< 1.3.0"
