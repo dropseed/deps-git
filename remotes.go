@@ -93,12 +93,15 @@ func stringsToVersions(strs []string, rangeStr string, includePrereleases bool) 
 	for _, s := range strs {
 		version, err := semver.Make(s)
 		if err != nil {
+			// Not a valid semver
 			continue
 		}
 		if len(version.Pre) > 0 && !includePrereleases {
+			// This is a pre-release and they aren't included
 			continue
 		}
 		if semverRange != nil && !semverRange(version) {
+			// There's a range and it's not in range
 			continue
 		}
 		versions = append(versions, version)

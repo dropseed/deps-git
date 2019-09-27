@@ -11,4 +11,4 @@ tests:
           replace_in_files:
           - filename: file.txt
             pattern: minikube version (\S+)
-            range: "< 1.3.0bad"
+            range: "< 1.3.0"
