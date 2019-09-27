@@ -22,7 +22,7 @@ type replaceInFile struct {
 	TagPrefix   string `json:"tag_prefix"`
 	Semver      *bool  `json:"semver"`
 	Prereleases bool   `json:"prereleases"`
-	// could allow user to specify a range
+	Range       string `json:"range"`
 }
 
 func loadRemotesFromEnv() map[string]*remote {
@@ -66,11 +66,11 @@ func (rif *replaceInFile) getLatestTag(tags []string) string {
 
 	// Enabled if not set
 	if rif.Semver == nil || *rif.Semver {
-		versions := stringsToVersions(tags, rif.Prereleases)
+		versions := stringsToVersions(tags, rif.Range, rif.Prereleases)
 		if len(versions) < 1 && rif.TagPrefix == "" {
 			// Try automatically removing "v" since it's so common
 			tags = filterAndRemovePrefixes(tags, "v")
-			versions = stringsToVersions(tags, rif.Prereleases)
+			versions = stringsToVersions(tags, rif.Range, rif.Prereleases)
 		}
 		tags = versionsToStrings(versions)
 	}
@@ -83,7 +83,12 @@ func (rif *replaceInFile) getLatestTag(tags []string) string {
 	return latestVersion
 }
 
-func stringsToVersions(strs []string, includePrereleases bool) semver.Versions {
+func stringsToVersions(strs []string, rangeStr string, includePrereleases bool) semver.Versions {
+	var semverRange semver.Range
+	if rangeStr != "" {
+		semverRange = semver.MustParseRange(rangeStr)
+	}
+
 	versions := semver.Versions{}
 	for _, s := range strs {
 		version, err := semver.Make(s)
@@ -91,6 +96,9 @@ func stringsToVersions(strs []string, includePrereleases bool) semver.Versions {
 			continue
 		}
 		if len(version.Pre) > 0 && !includePrereleases {
+			continue
+		}
+		if semverRange != nil && !semverRange(version) {
 			continue
 		}
 		versions = append(versions, version)
