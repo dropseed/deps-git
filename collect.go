@@ -25,6 +25,10 @@ func collect(inputPath, outputPath string) *schema.Dependencies {
 			fileStr := rif.readFile()
 			submatches := regex.FindStringSubmatch(fileStr)
 
+			if len(submatches) < 1 {
+				panic(fmt.Errorf("Pattern not found in file\n\n  Pattern: %s\n  Filename: %s", rif.Pattern, rif.Filename))
+			}
+
 			currentVersion := submatches[1]
 
 			if currentVersion == "" {
