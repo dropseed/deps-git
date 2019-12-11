@@ -1,0 +1,29 @@
+tests:
+- name: filter
+  repo: repo_current
+  diff: repo_updated
+  data: dependencies.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/libevent/libevent.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: libevent==(\S+)
+            semver: false  # uncaptured example won't work with semver
+            tag_filter: 'release-\S+-stable'
+
+- name: filter
+  repo: repo_current
+  diff: repo_updated_capture
+  data: dependencies_capture.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/libevent/libevent.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: libevent-captured==(\S+)
+            tag_filter: 'release-(\S+)-stable'

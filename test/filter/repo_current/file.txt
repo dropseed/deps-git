@@ -1,0 +1,2 @@
+libevent==release-2.1.10-stable
+libevent-captured==2.1.10

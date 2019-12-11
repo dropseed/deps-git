@@ -1,0 +1,24 @@
+{
+  "manifests": {
+    "": {
+      "current": {
+        "dependencies": {
+          "https://github.com/libevent/libevent.git": {
+            "constraint": "2.1.10",
+            "source": "git",
+            "repo": "https://github.com/libevent/libevent.git"
+          }
+        }
+      },
+      "updated": {
+        "dependencies": {
+          "https://github.com/libevent/libevent.git": {
+            "constraint": "2.1.11",
+            "source": "git",
+            "repo": "https://github.com/libevent/libevent.git"
+          }
+        }
+      }
+    }
+  }
+}
