@@ -13,7 +13,7 @@
       "updated": {
         "dependencies": {
           "https://github.com/kubernetes/minikube.git": {
-            "constraint": "1.4.0-beta.2",
+            "constraint": "1.6.0-beta.1",
             "source": "git",
             "repo": "https://github.com/kubernetes/minikube.git"
           }
