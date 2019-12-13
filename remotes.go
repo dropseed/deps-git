@@ -20,7 +20,6 @@ type replaceInFile struct {
 	Filename    string `json:"filename"`
 	Pattern     string `json:"pattern"`
 	TagPrefix   string `json:"tag_prefix"`
-	TagFilter   string `json:"tag_filter"`
 	Semver      *bool  `json:"semver"`
 	Prereleases bool   `json:"prereleases"`
 	Range       string `json:"range"`
@@ -59,28 +58,20 @@ func (rif *replaceInFile) writeFile(contents string) {
 }
 
 func (rif *replaceInFile) getLatestTag(tags []string) string {
-	if rif.TagPrefix != "" && rif.TagFilter != "" {
-		panic("Cannot use tag_prefix and tag_filter together. Please choose one.")
-	} else if rif.TagPrefix != "" {
+	if rif.TagPrefix != "" {
 		fmt.Printf("Filtering to tags with prefix %s and removing it", rif.TagPrefix)
 		tags = filterAndRemovePrefixes(tags, rif.TagPrefix)
-		fmt.Printf("Remaining tags: %v\n", tags)
-	} else if rif.TagFilter != "" {
-		fmt.Printf("Filtering tags using %s", rif.TagFilter)
-		tags = filter(tags, rif.TagFilter)
 		fmt.Printf("Remaining tags: %v\n", tags)
 	}
 
 	// Enabled if not set
 	if rif.Semver == nil || *rif.Semver {
 		versions := stringsToVersions(tags, rif.Range, rif.Prereleases)
-
-		// Try automatically removing "v" since it's so common
-		if len(versions) < 1 && rif.TagPrefix == "" && rif.TagFilter == "" {
+		if len(versions) < 1 && rif.TagPrefix == "" {
+			// Try automatically removing "v" since it's so common
 			tags = filterAndRemovePrefixes(tags, "v")
 			versions = stringsToVersions(tags, rif.Range, rif.Prereleases)
 		}
-
 		tags = versionsToStrings(versions)
 	}
 
@@ -132,22 +123,6 @@ func filterAndRemovePrefixes(tags []string, prefix string) []string {
 	for _, s := range tags {
 		if strings.HasPrefix(s, prefix) {
 			filtered = append(filtered, s[len(prefix):])
-		}
-	}
-	return filtered
-}
-
-func filter(tags []string, f string) []string {
-	regex := regexp.MustCompile(f)
-	filtered := []string{}
-	for _, s := range tags {
-		submatches := regex.FindStringSubmatch(s)
-		if len(submatches) == 1 {
-			// No group captured
-			filtered = append(filtered, submatches[0])
-		} else if len(submatches) == 2 {
-			// Group captured
-			filtered = append(filtered, submatches[1])
 		}
 	}
 	return filtered
