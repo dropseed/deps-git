@@ -46,7 +46,7 @@ dependencies:
           # group as the version name (i.e. you'll get "2.1.10" instead of "release-2.1.10")
           tag_filter:
             matching: 'release-(\S+)-stable'
-            to: $1
+            output_as: '$1'
 
       https://github.com/libevent/libevent.git:
         replace_in_files:
