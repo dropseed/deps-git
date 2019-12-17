@@ -1,5 +1,5 @@
 More content here
 
-minikube version 1.6.0
+minikube version 1.6.1
 
 And here
