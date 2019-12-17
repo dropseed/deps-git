@@ -1,0 +1,65 @@
+tests:
+- name: filter
+  repo: repo_current
+  diff: repo_updated
+  data: libevent.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/libevent/libevent.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: libevent==(\S+)
+            semver: false  # uncaptured example won't work with semver
+            tag_filter:
+              matching: 'release-\S+-stable'
+
+- name: filter capture
+  repo: repo_current
+  diff: repo_updated_captured
+  data: libevent_captured.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/libevent/libevent.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: libevent-captured==(\S+)
+            tag_filter:
+              matching: 'release-(\S+)-stable'
+              output_as: $1
+              sort_as: $1
+
+- name: curl
+  repo: repo_current
+  diff: repo_updated_curl
+  data: curl.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/curl/curl.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: curl==(\S+)
+            tag_filter:
+              matching: 'curl-(\d+)_(\d+)_(\d+)'
+              sort_as: $1.$2.$3
+
+- name: curl captured
+  repo: repo_current
+  diff: repo_updated_curl_captured
+  data: curl_captured.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/curl/curl.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: curl-captured==(\S+)
+            tag_filter:
+              matching: 'curl-(\d+)_(\d+)_(\d+)'
+              output_as: $1.$2.$3

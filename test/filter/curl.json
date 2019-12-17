@@ -1,0 +1,24 @@
+{
+  "manifests": {
+    "": {
+      "current": {
+        "dependencies": {
+          "https://github.com/curl/curl.git": {
+            "constraint": "curl-7_59_0",
+            "source": "git",
+            "repo": "https://github.com/curl/curl.git"
+          }
+        }
+      },
+      "updated": {
+        "dependencies": {
+          "https://github.com/curl/curl.git": {
+            "constraint": "curl-7_67_0",
+            "source": "git",
+            "repo": "https://github.com/curl/curl.git"
+          }
+        }
+      }
+    }
+  }
+}
