@@ -2,7 +2,7 @@ tests:
 - name: filter
   repo: repo_current
   diff: repo_updated
-  data: dependencies.json
+  data: libevent.json
   user_config:
     path: /
     settings:
@@ -12,12 +12,13 @@ tests:
           - filename: file.txt
             pattern: libevent==(\S+)
             semver: false  # uncaptured example won't work with semver
-            tag_filter: 'release-\S+-stable'
+            tag_filter:
+              matching: 'release-\S+-stable'
 
-- name: filter
+- name: filter capture
   repo: repo_current
-  diff: repo_updated_capture
-  data: dependencies_capture.json
+  diff: repo_updated_captured
+  data: libevent_captured.json
   user_config:
     path: /
     settings:
@@ -26,4 +27,39 @@ tests:
           replace_in_files:
           - filename: file.txt
             pattern: libevent-captured==(\S+)
-            tag_filter: 'release-(\S+)-stable'
+            tag_filter:
+              matching: 'release-(\S+)-stable'
+              output_as: $1
+              sort_as: $1
+
+- name: curl
+  repo: repo_current
+  diff: repo_updated_curl
+  data: curl.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/curl/curl.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: curl==(\S+)
+            tag_filter:
+              matching: 'curl-(\d+)_(\d+)_(\d+)'
+              sort_as: $1.$2.$3
+
+- name: curl captured
+  repo: repo_current
+  diff: repo_updated_curl_captured
+  data: curl_captured.json
+  user_config:
+    path: /
+    settings:
+      remotes:
+        https://github.com/curl/curl.git:
+          replace_in_files:
+          - filename: file.txt
+            pattern: curl-captured==(\S+)
+            tag_filter:
+              matching: 'curl-(\d+)_(\d+)_(\d+)'
+              output_as: $1.$2.$3

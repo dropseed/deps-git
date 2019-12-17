@@ -1,2 +1,4 @@
 libevent==release-2.1.8-stable
 libevent-captured==2.1.10
+curl==curl-7_59_0
+curl-captured==7.59.0
