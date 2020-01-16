@@ -19,8 +19,6 @@ func act(inputPath, outputPath string) *schema.Dependencies {
 	for _, manifest := range dependencies.Manifests {
 		if manifest.Updated != nil {
 			for name, updatedDep := range manifest.Updated.Dependencies {
-				currentDep := manifest.Current.Dependencies[name]
-				currentVersion := currentDep.Constraint
 				updatedVersion := updatedDep.Constraint
 
 				remote := remotes[name]
@@ -30,8 +28,9 @@ func act(inputPath, outputPath string) *schema.Dependencies {
 
 					submatch := regex.FindStringSubmatch(fileStr)
 					currentStr := submatch[0]
+					foundVersion := submatch[1] // the single expected capture group
 
-					replacement := strings.Replace(currentStr, currentVersion, updatedVersion, 1)
+					replacement := strings.Replace(currentStr, foundVersion, updatedVersion, 1)
 					fmt.Printf("Replacing %s with %s in %s\n", currentStr, replacement, rif.Filename)
 
 					result := regex.ReplaceAllString(fileStr, replacement)
