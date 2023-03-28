@@ -1,0 +1,4 @@
+github.com/blang/semver v3.5.1+incompatible h1:cQNTCjp13qL8KC3Nbxr/y2Bqb63oX6wdnnjpJbkM4JQ=
+github.com/blang/semver v3.5.1+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
+github.com/dropseed/deps v0.0.0-20190911221526-3593faf548de h1:gZ2wt+W6TjiKf/xxoYiz5gtghrS/c1K5KrZUCsGupLY=
+github.com/dropseed/deps v0.0.0-20190911221526-3593faf548de/go.mod h1:lHO0xXoVG6AIxVg+OMfIOYbwGgcJEZYOMRFV6oB5vYw=

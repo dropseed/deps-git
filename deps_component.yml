@@ -2,7 +2,7 @@ install: |
   if [ -z "$DEPS_TEST" ]; then
       curl https://raw.githubusercontent.com/dropseed/deps-git/master/install.sh | sh -s -- 0.3.1
   else
-      dep ensure && go build -o bin/deps-git
+      go mod tidy && go build -o bin/deps-git
   fi
 collect: $DEPS_COMPONENT_PATH/bin/deps-git --collect
 act: $DEPS_COMPONENT_PATH/bin/deps-git --act
