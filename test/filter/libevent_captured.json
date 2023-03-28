@@ -13,7 +13,7 @@
       "updated": {
         "dependencies": {
           "https://github.com/libevent/libevent.git": {
-            "constraint": "2.1.11",
+            "constraint": "2.1.12",
             "source": "git",
             "repo": "https://github.com/libevent/libevent.git"
           }

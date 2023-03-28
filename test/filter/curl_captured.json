@@ -13,7 +13,7 @@
       "updated": {
         "dependencies": {
           "https://github.com/curl/curl.git": {
-            "constraint": "7.68.0",
+            "constraint": "8.0.1",
             "source": "git",
             "repo": "https://github.com/curl/curl.git"
           }
