@@ -1,8 +1,0 @@
-language: go
-install:
-  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-  - curl https://deps.app/install.sh | bash
-script:
-  - ./bin/deps dev test -l
-after_success:
-  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
