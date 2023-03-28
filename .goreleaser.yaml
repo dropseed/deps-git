@@ -21,6 +21,6 @@ archives:
     - LICENSE*
     - README*
 checksum:
-  name_template: 'checksums.txt'
+  name_template: '{{ .ProjectName }}_{{.Version}}_checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"

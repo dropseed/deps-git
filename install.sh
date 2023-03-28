@@ -60,26 +60,6 @@ execute() {
   done
   rm -rf "${tmpdir}"
 }
-is_supported_platform() {
-  platform=$1
-  found=1
-  case "$platform" in
-    linux/amd64) found=0 ;;
-    linux/386) found=0 ;;
-    darwin/amd64) found=0 ;;
-    darwin/386) found=0 ;;
-  esac
-  return $found
-}
-check_platform() {
-  if is_supported_platform "$PLATFORM"; then
-    # optional logging goes here
-    true
-  else
-    log_crit "platform $PLATFORM is not supported.  Make sure this script is up-to-date and file request at https://github.com/${PREFIX}/issues/new"
-    exit 1
-  fi
-}
 tag_to_version() {
   if [ -z "${TAG}" ]; then
     log_info "checking GitHub for latest tag"
@@ -349,15 +329,13 @@ PREFIX="$OWNER/$REPO"
 log_prefix() {
 	echo "$PREFIX"
 }
-PLATFORM="${OS}/${ARCH}"
+
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
 
 uname_os_check "$OS"
 uname_arch_check "$ARCH"
 
 parse_args "$@"
-
-check_platform
 
 tag_to_version
 
